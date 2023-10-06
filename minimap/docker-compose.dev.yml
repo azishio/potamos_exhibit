@@ -1,0 +1,37 @@
+services:
+  nextapp:
+    environment:
+      - WATCHPACK_POLLING=true
+      - NODE_ENV=development
+      - MONGO_URL=mongodb://mongo:27017/game
+    build:
+      context: ./nextapp
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+      - ./nextapp:/app
+      - nextapp_node_volumes:/app/node_modules
+    networks:
+      - default
+    command: "pnpm dev"
+
+  mongo:
+    image: mongo
+    restart: always
+    networks:
+      - default
+    ports:
+      - 27017:27017
+
+  mongo_express:
+    image: mongo-express
+    restart: always
+    networks:
+      - default
+    ports:
+      - 8081:8081
+
+volumes:
+  nextapp_node_volumes:

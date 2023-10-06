@@ -1,0 +1,18 @@
+version: '3.3'
+services:
+  app:
+    environment:
+      # 依存関係の解決ができていないので、gpuは無効
+      - USE_GPU=false
+    build:
+      context: ./app/
+      dockerfile: ./Dockerfile
+    volumes:
+      - node_modules:/app/node_modules
+      - ./cache:/app/cache
+      - ./input:/app/input
+      - ./output:/app/output
+      - ./app:/app/
+    tty: true
+volumes:
+  node_modules:

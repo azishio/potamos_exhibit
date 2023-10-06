@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 120 120">
+    <circle cx="60" cy="60" r="40" fill="green">
+        <animate attributeName="r" from="10" to="60" dur="1.2s" begin="0s" repeatCount="indefinite" />
+        <animate attributeName="opacity" from="1" to="0" dur="1.2s" begin="0s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="60" cy="60" r="40" fill="none" stroke="black" stroke-width="2">
+        <animate attributeName="r" from="10" to="60" dur="1.2s" begin="0s" repeatCount="indefinite" />
+        <animate attributeName="opacity" from="1" to="0" dur="1.2s" begin="0s" repeatCount="indefinite" />
+    </circle>
+<g transform="translate(35,10) scale(0.1) ">
+	<path class="st0" d="M256,0C139.563,0,45.172,94.406,45.172,210.828S210.875,512,256,512c45.109,0,210.828-184.75,210.828-301.172
+		S372.438,0,256,0z M256,307.594c-53.453,0-96.766-43.328-96.766-96.766c0-53.453,43.313-96.766,96.766-96.766
+		c53.438,0,96.766,43.313,96.766,96.766C352.766,264.266,309.438,307.594,256,307.594z" style="fill: rgb(75, 75, 75);"></path>
+</g>
+</svg>
+
+
