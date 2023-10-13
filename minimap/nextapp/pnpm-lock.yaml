@@ -17,6 +17,15 @@ dependencies:
   '@emotion/styled':
     specifier: ^11.11.0
     version: 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.24)(react@18.2.0)
+  '@jscad/core':
+    specifier: ^2.6.7
+    version: 2.6.7
+  '@jscad/modeling':
+    specifier: ^2.12.0
+    version: 2.12.0
+  '@jscad/stl-serializer':
+    specifier: ^2.1.15
+    version: 2.1.15
   '@types/leaflet':
     specifier: ^1.9.6
     version: 1.9.6
@@ -50,6 +59,9 @@ dependencies:
   react-leaflet:
     specifier: ^4.2.1
     version: 4.2.1(leaflet@1.9.4)(react-dom@18.2.0)(react@18.2.0)
+  zod:
+    specifier: ^3.22.4
+    version: 3.22.4
 
 devDependencies:
   '@types/node':
@@ -1428,6 +1440,159 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
+  /@jscad/3mf-serializer@2.1.9:
+    resolution: {integrity: sha512-LcFWT3KdcFQYwiJXPv3gcR6x0OHP1MpqIi5Qe0NNg0XT+ENtG4ixY2Cd17oFsiagp4W0lMM8U5tfCJ7jOAKDXA==}
+    dependencies:
+      '@jscad/array-utils': 2.1.4
+      '@jscad/modeling': 2.12.0
+      fflate: 0.7.3
+      onml: 1.2.0
+    dev: false
+
+  /@jscad/amf-deserializer@2.3.5:
+    resolution: {integrity: sha512-0mjOde1mL0TnOrFwVH14aWdFINmPYxVUNx9rLlIDoR7kk9K0cPMQycgO0ac5SVMwz8W1LovEuMWPFdOrJcGTtw==}
+    dependencies:
+      '@jscad/modeling': 2.12.0
+      saxes: 5.0.1
+    dev: false
+
+  /@jscad/amf-serializer@2.1.15:
+    resolution: {integrity: sha512-Plk06CbHWeWdBxA6siFYXHQb+GR1NXN9qBfo9OujK6b4YPt7VGRWykybxp7jrOZ2fbqtgAVKKi+mK8iHXNUzmw==}
+    dependencies:
+      '@jscad/array-utils': 2.1.4
+      '@jscad/modeling': 2.12.0
+      onml: 1.3.0
+    dev: false
+
+  /@jscad/array-utils@2.1.4:
+    resolution: {integrity: sha512-c31r4zSKsE+4Xfwk2V8monDA0hx5G89QGzaakWVUvuGNowYS9WSsYCwHiTIXodjR+HEnDu4okQ7k/whmP0Ne2g==}
+    dev: false
+
+  /@jscad/core@2.6.7:
+    resolution: {integrity: sha512-09ltjtMcLiZBmhCA88SJFe9Wz5AOyCIqGIF1LP6FwyF54cRc3Eu+oLaoUDqwGLl7x/D1Bam+NiyGyoBDhpk6oA==}
+    dependencies:
+      '@jscad/array-utils': 2.1.4
+      '@jscad/io': 2.4.6
+      '@jscad/io-utils': 2.0.25
+      '@jscad/modeling': 2.12.0
+      json5: 2.2.3
+      strip-bom: 4.0.0
+    dev: false
+
+  /@jscad/dxf-deserializer@2.3.22:
+    resolution: {integrity: sha512-5DljdpiuqPP4k1QBoIQNL+roAYBfipRcLFUml8FCWgt/zUFS9nb2N19wHAoLAmsPdrXcCdfWJG9ESoju1PuMLw==}
+    dependencies:
+      '@jscad/modeling': 2.12.0
+    dev: false
+
+  /@jscad/dxf-serializer@2.1.15:
+    resolution: {integrity: sha512-CR02Vmt3uvvIDs4gJb6tle1cVcJB4TIdHkDjxgBoJGLmnUY4PL93XWsoBytiuvxCnMJdKRk5XrPyabkAJdmZzQ==}
+    dependencies:
+      '@jscad/array-utils': 2.1.4
+      '@jscad/modeling': 2.12.0
+    dev: false
+
+  /@jscad/io-utils@2.0.25:
+    resolution: {integrity: sha512-grkntLoZoOImMXzjXV4hz1qLYz4j6bReOdTqa6/rLjqtBWugRhwH2GMYq74N9YqNjlpy5NBb0Ac36kW+vzr7Ow==}
+    dev: false
+
+  /@jscad/io@2.4.6:
+    resolution: {integrity: sha512-GbOWYfZjiIwkWYG914Hmp+1TmMf9aEWKJGA4I1fZSJe8tOkoT4mwpedJdUoumCNrIO9VzxjjYFzayOl5ybrCGw==}
+    dependencies:
+      '@jscad/3mf-serializer': 2.1.9
+      '@jscad/amf-deserializer': 2.3.5
+      '@jscad/amf-serializer': 2.1.15
+      '@jscad/array-utils': 2.1.4
+      '@jscad/dxf-deserializer': 2.3.22
+      '@jscad/dxf-serializer': 2.1.15
+      '@jscad/io-utils': 2.0.25
+      '@jscad/json-deserializer': 2.0.26
+      '@jscad/json-serializer': 2.0.25
+      '@jscad/modeling': 2.12.0
+      '@jscad/obj-deserializer': 2.0.25
+      '@jscad/obj-serializer': 2.1.15
+      '@jscad/stl-deserializer': 2.1.22
+      '@jscad/stl-serializer': 2.1.15
+      '@jscad/svg-deserializer': 2.5.6
+      '@jscad/svg-serializer': 2.3.13
+      '@jscad/x3d-deserializer': 2.2.5
+      '@jscad/x3d-serializer': 2.4.5
+    dev: false
+
+  /@jscad/json-deserializer@2.0.26:
+    resolution: {integrity: sha512-eiuH4B/tpEu0Sc6qUS+J5AR06UjM7NGykf3S8O/IDL4C0nLfHCgyBqnW2Wah2CV27hfn4i/PoVUjDsgRdRkq8Q==}
+    dependencies:
+      '@jscad/array-utils': 2.1.4
+    dev: false
+
+  /@jscad/json-serializer@2.0.25:
+    resolution: {integrity: sha512-6KiEVUTE3/gC3Hpt2zZId/IGi5zimk/GemNULT7AMi36SVYiXnSkb5RkH/wHFLZKY0JMPQZvdhvMLm3VhMgA8Q==}
+    dependencies:
+      '@jscad/modeling': 2.12.0
+    dev: false
+
+  /@jscad/modeling@2.12.0:
+    resolution: {integrity: sha512-TeAGX4QPEX+sBfeTMa04HwGL+lpdirqXt9JJKYi0r+UGgcwlsCtOs7dS23WGEAGu5QZgGNF4NJsr9DRPIWoaDQ==}
+    dev: false
+
+  /@jscad/obj-deserializer@2.0.25:
+    resolution: {integrity: sha512-0ludafBIrhQuUJljdoq3HX17q2pNZPMzwrQuNIEz3H8KuupAPeRZ4WAywf42CGT4xDg+4irHFqSogSVTD6iydg==}
+    dependencies:
+      '@jscad/modeling': 2.12.0
+    dev: false
+
+  /@jscad/obj-serializer@2.1.15:
+    resolution: {integrity: sha512-kIIIq0wF+tq9JckM2YEBGSWdFL7VVtEG+VT1//iRqY1ZaF+0OEMS0v0gGa2s/7V5U4COxlHdGK2Xs38G5CmshQ==}
+    dependencies:
+      '@jscad/array-utils': 2.1.4
+      '@jscad/modeling': 2.12.0
+    dev: false
+
+  /@jscad/stl-deserializer@2.1.22:
+    resolution: {integrity: sha512-ZPJKg7XJRkZCjr5C6kf3VPOgBcvNyl4K1nZR7yo/8fzY98avpAAj70t3uBFKvpQ9m7yMRJ/EgH0bzbDeAp7L1g==}
+    dependencies:
+      '@jscad/io-utils': 2.0.25
+      '@jscad/modeling': 2.12.0
+    dev: false
+
+  /@jscad/stl-serializer@2.1.15:
+    resolution: {integrity: sha512-/kMOu+rQJ7hMUxxPmFM1+t5+5891z+WQSms7d2FYJuJkdq0TRl9j6bUtcyBrG8p9M1wrJAIFNaC+rrxDTrMuWg==}
+    dependencies:
+      '@jscad/array-utils': 2.1.4
+      '@jscad/modeling': 2.12.0
+    dev: false
+
+  /@jscad/svg-deserializer@2.5.6:
+    resolution: {integrity: sha512-GoIVbSUnIdNkCJRt4v3EhVpoUEsGODY6dVNun/J9fk707Sp0Z+SAJKu32oNSpp0m0wn2kZ3uLeXx61vSmWpzqg==}
+    dependencies:
+      '@jscad/array-utils': 2.1.4
+      '@jscad/modeling': 2.12.0
+      saxes: 5.0.1
+    dev: false
+
+  /@jscad/svg-serializer@2.3.13:
+    resolution: {integrity: sha512-B7avvwb90vTaHfTi9Gr1jkpycOKqr8JF3vYfgQs/QIPKCrudBYo24RdzvsMdwdmDL5HNmf1Yx7Cku2KcElX5OQ==}
+    dependencies:
+      '@jscad/modeling': 2.12.0
+      onml: 1.3.0
+    dev: false
+
+  /@jscad/x3d-deserializer@2.2.5:
+    resolution: {integrity: sha512-eXOtVCdPpVOXj6tI+2LJG9QDLfMwdyIu7NXMGvDZj1t5XPUsNB6h8pHCcCVigx2qDR3XC/sv/VYWwcPcKhQu0g==}
+    dependencies:
+      '@jscad/array-utils': 2.1.4
+      '@jscad/modeling': 2.12.0
+      saxes: 5.0.1
+    dev: false
+
+  /@jscad/x3d-serializer@2.4.5:
+    resolution: {integrity: sha512-ex1p6MLBqOQMynILcNkstjRCFhAZpUvfOTHFK3Ml8YwdKLfZbXcxWZ6AGzeXn1h0kIpenMIVnNKbrpmq71PwIQ==}
+    dependencies:
+      '@jscad/array-utils': 2.1.4
+      '@jscad/modeling': 2.12.0
+      onml: 1.3.0
+    dev: false
+
   /@mongodb-js/saslprep@1.1.0:
     resolution: {integrity: sha512-Xfijy7HvfzzqiOAhAepF4SGN5e9leLkMvg/OPOF97XemjfVCYN/oWa75wnkc6mltMSTwY+XlbhWgUOJmkFspSw==}
     requiresBuild: true
@@ -2704,6 +2869,10 @@ packages:
       reusify: 1.0.4
     dev: true
 
+  /fflate@0.7.3:
+    resolution: {integrity: sha512-0Zz1jOzJWERhyhsimS54VTqOteCNwRtIlh8isdL0AXLo0g7xNTfTL7oWrkmCnPhZGocKIkWHBistBrrpoNH3aw==}
+    dev: false
+
   /file-entry-cache@6.0.1:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}
     engines: {node: ^10.12.0 || >=12.0.0}
@@ -3233,6 +3402,12 @@ packages:
       minimist: 1.2.8
     dev: true
 
+  /json5@2.2.3:
+    resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
+    engines: {node: '>=6'}
+    hasBin: true
+    dev: false
+
   /jsx-ast-utils@3.3.5:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
     engines: {node: '>=4.0'}
@@ -3554,6 +3729,18 @@ packages:
     dependencies:
       wrappy: 1.0.2
     dev: true
+
+  /onml@1.2.0:
+    resolution: {integrity: sha512-olqYAg18XoHAhm7tK9DdBCOVdts70DGmMgCNLOWyqZokht2utgGSKBB4JHi6pBZpmioAhcYlxK+91L3tsrz+GA==}
+    dependencies:
+      sax: 1.3.0
+    dev: false
+
+  /onml@1.3.0:
+    resolution: {integrity: sha512-RhGUsC6Im2A5vAdIvxE3auRKTqrqUZQl/AYLn8+9lM3SO4da5bwhcI5TcM+hfQxNCSLLOVErsl9p0ZPjKKmz+g==}
+    dependencies:
+      sax: 1.3.0
+    dev: false
 
   /optionator@0.9.3:
     resolution: {integrity: sha512-JjCoypp+jKn1ttEFExxhetCKeJt9zhAgAve5FXHixTvFDW/5aEktX9bufBKLRRMdU7bNtpLfcGu94B3cdEJgjg==}
@@ -3898,6 +4085,17 @@ packages:
       is-regex: 1.1.4
     dev: true
 
+  /sax@1.3.0:
+    resolution: {integrity: sha512-0s+oAmw9zLl1V1cS9BtZN7JAd0cW5e0QH4W3LWEK6a4LaLEA2OTpGYWDY+6XasBLtz6wkm3u1xRw95mRuJ59WA==}
+    dev: false
+
+  /saxes@5.0.1:
+    resolution: {integrity: sha512-5LBh1Tls8c9xgGjw3QrMwETmTMVk0oFgvrFSvWx62llR2hcEInrKNZ2GZCCuuy2lvWrdl5jhbpeqc5hRYKFOcw==}
+    engines: {node: '>=10'}
+    dependencies:
+      xmlchars: 2.2.0
+    dev: false
+
   /scheduler@0.23.0:
     resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}
     dependencies:
@@ -4052,6 +4250,11 @@ packages:
     resolution: {integrity: sha512-vavAMRXOgBVNF6nyEEmL3DBK19iRpDcoIwW+swQ+CbGiu7lju6t+JklA1MHweoWtadgt4ISVUsXLyDq34ddcwA==}
     engines: {node: '>=4'}
     dev: true
+
+  /strip-bom@4.0.0:
+    resolution: {integrity: sha512-3xurFv5tEgii33Zi8Jtp55wEIILR9eh34FAW00PZf+JnSsTmV/ioewSgQl97JHvgjoRGwPShsWm+IdrxB35d0w==}
+    engines: {node: '>=8'}
+    dev: false
 
   /strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
@@ -4346,6 +4549,10 @@ packages:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
     dev: true
 
+  /xmlchars@2.2.0:
+    resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
+    dev: false
+
   /yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
     dev: true
@@ -4359,3 +4566,7 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+  /zod@3.22.4:
+    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+    dev: false

@@ -1,0 +1,152 @@
+[
+  {
+    "name": "500mlペットボトル",
+    "point": 3,
+    "description": "飲料水としてはもちろん生活用水としても利用できる",
+    "image": "mizu.png"
+  },
+  {
+    "name": "200mlペットボトル",
+    "point": 3,
+    "description": "飲料水としてはもちろん生活用水としても利用できる",
+    "image": "mizu.png"
+  },
+  {
+    "name": "食料３日分",
+    "point": 3,
+    "description": "レトルト食品や缶詰、アルファ米、インスタント麺、パン、菓子など。1日あたり1600～2000カロリー分",
+    "image": "food_kandume.png"
+  },
+  {
+    "name": "モバイルバッテリー",
+    "point": 3,
+    "description": "災害の状況や家族との連絡手段として必要なスマートフォンの充電を行う。電力を使えない状況でも充電を行える",
+    "image": "smartphone_mobile_battery.png"
+  },
+  {
+    "name": "簡易トイレ",
+    "point": 3,
+    "description": "簡易トイレ50回分。水を流さないままトイレを使用すると匂いや衛生面で問題が発生する",
+    "image": "saigai_toilet_kani.png"
+  },
+  {
+    "name": "ホイッスル",
+    "point": 3,
+    "description": "胸・体を押し付けられている状況でも自分の居場所を知らせることができる",
+    "image": "referee_whistle.png"
+  },
+  {
+    "name": "防寒具",
+    "point": 3,
+    "description": "ジャンパーや防寒シートなど。夏は直射日光を防ぐため、冬には体温の低下を防ぐことができる",
+    "image": "moufu.png"
+  },
+  {
+    "name": "ラジオ",
+    "point": 3,
+    "description": "停電になっても使用でき、ネットが繋がらなくても災害時に必要な情報を得ることができる",
+    "image": "saigai_radio_temawashi.png"
+  },
+  {
+    "name": "靴",
+    "point": 3,
+    "description": "滑らず、脱げない靴",
+    "image": "medical_rihabiri_shoes.png"
+  },
+  {
+    "name": "ガムテープ",
+    "point": 3,
+    "description": "窓ガラスの補強・靴や服の補修はもちろん怪我の応急処置や伝言板としても活用できる",
+    "image": "tape_gumtape .png"
+  },
+  {
+    "name": "救急セット",
+    "point": 3,
+    "description": "持病の薬や風邪薬・消毒液・絆創膏・爪切りなど。慣れない環境では体調を崩しやすい",
+    "image": "iryou_kusuribako2.png"
+  },
+  {
+    "name": "小型テント",
+    "point": 3,
+    "description": "プライバシーの保護・避難場所の確保ができる",
+    "image": "camp_tent_maru.png"
+  },
+  {
+    "name": "貴重品・現金",
+    "point": 3,
+    "description": "健康保険証や運転免許証などの身分証明書やクレジットカード・印鑑など",
+    "image": "saifu.png"
+  },
+  {
+    "name": "LEDライト",
+    "point": 3,
+    "description": "夜間の避難や停電時に役立ちます",
+    "image": "kaden_kaichu_dentou.png"
+  },
+  {
+    "name": "歯ブラシ",
+    "point": 3,
+    "description": "口の中を清潔に保つ。歯磨きシートなど水を使用せずにケアできるものもある",
+    "image": "haburashi.png"
+  },
+  {
+    "name": "着替え",
+    "point": 3,
+    "description": "下着・靴下・動きやすい服など。支援物資の衣類が到着するまで3日程度かかる",
+    "image": "fuku_tatamu.png"
+  },
+  {
+    "name": "レインコート",
+    "point": 2,
+    "description": "大雨の中でも体が濡れず避難できる",
+    "image": "fashion_raincoat_amagappa.png"
+  },
+  {
+    "name": "万能ナイフ",
+    "point": 2,
+    "description": "刃物や缶切り・栓抜きなどの複数の種類がついているナイフ。小型で持ち運びしやすい",
+    "image": "dougu_army_knife.png"
+  },
+  {
+    "name": "ポータブル電源",
+    "point": 2,
+    "description": "USB端子の出力に加え、AC出力も可能である。出力も大きいので家電を動かすこともできる",
+    "image": "computer_dengen_unit.png"
+  },
+  {
+    "name": "充電コード",
+    "point": 2,
+    "description": "スマートフォンの充電に必要不可欠",
+    "image": "pc_smartphone_battery_juuden.png"
+  },
+  {
+    "name": "ろうそく",
+    "point": 1,
+    "description": "停電時に役立つ。ろうそく台や受け皿を用いて使用する",
+    "image": "thumbnail_rousoku_you.jpg"
+  },
+  {
+    "name": "ティッシュペーパー",
+    "point": 1,
+    "description": "鼻をかんだり床やテーブルの掃除に使用する",
+    "image": "wet_tissue.png"
+  },
+  {
+    "name": "ロープ",
+    "point": 1,
+    "description": "救助・避難の場面で使用する。またブルーシートと組み合わせると日差しよけ・雨漏り対策・簡易テントの作成が行える",
+    "image": "rope_taba.png"
+  },
+  {
+    "name": "新聞紙",
+    "point": 1,
+    "description": "紙食器の材料や防寒対策としても使用できる",
+    "image": "news_shinbunshi.png"
+  },
+  {
+    "name": "スリッパ",
+    "point": 1,
+    "description": "避難の際、落下物や割れ物から足を守る。避難所では防寒具として用いる",
+    "image": "slipper_skyblue.png"
+  }
+]

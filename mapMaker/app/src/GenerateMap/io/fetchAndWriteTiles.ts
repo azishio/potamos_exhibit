@@ -1,9 +1,9 @@
 import fs from "graceful-fs";
 import path from "path";
-import { type Vector2D } from "../../../@types/Vector.ts";
-import parallelTaskRunner from "../utils/parallelTaskRunner.ts";
-import singleTaskRunner from "../utils/singleTaskRunner.ts";
-import type Progress from "../../../ui/progress.ts";
+import { type Vector2D } from "../../@types/Vector.ts";
+import parallelTaskRunner from "../modules/utils/parallelTaskRunner.ts";
+import singleTaskRunner from "../modules/utils/singleTaskRunner.ts";
+import type Progress from "../../ui/progress.ts";
 
 const invalidTile: Array<{
   tile: string;

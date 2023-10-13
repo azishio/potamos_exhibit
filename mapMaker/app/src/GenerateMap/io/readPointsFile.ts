@@ -1,5 +1,5 @@
 import fs from "fs";
-import { type SystemCode, type Vector2D } from "../../../@types/Vector.ts";
+import { type SystemCode, type Vector2D } from "../../@types/Vector.ts";
 
 function objValidator(obj: unknown): boolean {
   if (

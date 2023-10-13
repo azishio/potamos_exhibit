@@ -1,8 +1,8 @@
 import { type FeatureCollection, type Point } from "geojson";
 import fs from "graceful-fs";
 import path from "path";
-import { type MapInfo } from "../../../@types/Map.ts";
-import { type AltiProperties, type DEMData } from "../../../@types/GeoJSON.ts";
+import { type MapInfo } from "../../@types/Map.ts";
+import { type AltiProperties, type DEMData } from "../../@types/GeoJSON.ts";
 
 function readDEMFile(obj: unknown): DEMData[] {
   if (
@@ -44,10 +44,10 @@ function readDEMFile(obj: unknown): DEMData[] {
  * @param mapInfo
  * @param dirPath ファイルが存在するディレクトリパス
  */
-export default async function readDEM5Files(
+export default function readDEM5Files(
   dirPath: string,
   mapInfo: MapInfo,
-): Promise<DEMData[]> {
+): DEMData[] {
   const useFileNameList = mapInfo.tile.list.map(
     ([x, y]) => `${x}_${y}.geojson`,
   );

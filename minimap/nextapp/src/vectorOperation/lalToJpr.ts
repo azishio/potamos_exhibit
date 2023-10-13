@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import sigma from "@/coordinateTransformation/sigma";
+import sigma from "@/vectorOperation/sigma";
 
 /**
  * 緯度経度を平面直角座標に変換

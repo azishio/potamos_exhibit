@@ -1,16 +1,22 @@
 import path from "path";
 import fs from "fs";
 import fsp from "fs/promises";
-import getMapInfo from "./modeles/getMapInfo.ts";
-import plotDataToArray from "./modeles/plotDataToArray.ts";
-import fetchAndWriteTiles from "./modeles/io/fetchAndWriteTiles.ts";
-import readDEM5Files from "./modeles/io/readDEM5Files.ts";
+import primitives from "@jscad/modeling/src/primitives";
+import transforms from "@jscad/modeling/src/operations/transforms";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+import stlSerializer from "@jscad/stl-serializer";
+import extrusions from "@jscad/modeling/src/operations/extrusions";
+import getMapInfo from "./modules/getMapInfo.ts";
+import plotDataToArray from "./modules/plotDataToArray.ts";
+import fetchAndWriteTiles from "./io/fetchAndWriteTiles.ts";
+import readDEM5Files from "./io/readDEM5Files.ts";
 import {
   akimaMissingInterpolation,
   akimaUpSampling,
-} from "./modeles/interpolation/akima.ts";
-import sliceMap from "./modeles/sliceMap.ts";
-import { binarization, boolTo01 } from "./modeles/utils/math.ts";
+} from "./modules/interpolation/akima.ts";
+import sliceMap from "./modules/sliceMap.ts";
+import { binarization, boolTo01 } from "./modules/utils/math.ts";
 import {
   CAN_OUPTUP_PNG_MAX_LENGTH,
   NULL,
@@ -19,29 +25,32 @@ import {
 import {
   bilinearMissingInterpolation,
   bilinearUpSampling,
-} from "./modeles/interpolation/bilinear.ts";
-import readPointsFile from "./modeles/io/readPointsFile.ts";
-import map2D from "./modeles/utils/map2D.ts";
-import encodePNG from "./modeles/utils/encodePNG.ts";
-import normalizationUint16 from "./modeles/normalizationUint16.ts";
+} from "./modules/interpolation/bilinear.ts";
+import readPointsFile from "./io/readPointsFile.ts";
+import map2D from "./modules/utils/map2D.ts";
+import encodePNG from "./modules/utils/encodePNG.ts";
+import normalizationUint16 from "./modules/normalizationUint16.ts";
 import {
   bicubicMissingInterpolation,
   bicubicUpSampling,
-} from "./modeles/interpolation/bicubic.ts";
-import makeDepression from "./modeles/interpolation/makeDepression.ts";
-import size2D from "./modeles/utils/size2D.ts";
+} from "./modules/interpolation/bicubic.ts";
+import makeDepression from "./modules/interpolation/makeDepression.ts";
+import size2D from "./modules/utils/size2D.ts";
 import type Progress from "../ui/progress.ts";
 import { type SystemCode, type Vector2D } from "../@types/Vector.ts";
 import { type MapInfo } from "../@types/Map.ts";
-import makeDepressionGPU from "./modeles/interpolation/makeDepressionGPU.ts";
+import makeDepressionGPU from "./modules/interpolation/makeDepressionGPU.ts";
 import {
   bilinearMissingInterpolationGPU,
   bilinearUpSamplingGPU,
-} from "./modeles/interpolation/bilinearGPU.ts";
+} from "./modules/interpolation/bilinearGPU.ts";
 import {
   bicubicMissingInterpolationGPU,
   bicubicUpSamplingGPU,
-} from "./modeles/interpolation/bicubicGPU.ts";
+} from "./modules/interpolation/bicubicGPU.ts";
+import readBldgData from "./io/readBldgData.ts";
+import lalToJpr from "./modules/coordinateTransformation/lalToJpr.ts";
+import systemCodeToOrigin from "./modules/utils/systemCodeToOrigin.ts";
 
 export interface CallbackArg {
   maps: Map<string, number[][]>;
@@ -89,6 +98,7 @@ export default class MapGenerator {
       inputDir: inputDirPath,
       outputDir: outputDirPath,
       cacheDEM5: path.join(cacheDirPath, "dem5"),
+      cacheFGD: path.join(cacheDirPath, "fgd"),
     };
 
     Object.values(this.path).forEach((dirPath) => {
@@ -121,6 +131,11 @@ export default class MapGenerator {
     this.mapInfo = getMapInfo(points, systemCode);
     this.systemCode = systemCode;
 
+    fs.writeFileSync(
+      path.join(this.path.outputDir, "mapInfo.json"),
+      JSON.stringify(this.mapInfo, null, 2),
+    );
+
     await fetchAndWriteTiles(
       `https://cyberjapandata.gsi.go.jp/xyz/experimental_dem5a/18/`,
       this.mapInfo.tile.list,
@@ -132,7 +147,18 @@ export default class MapGenerator {
       },
     );
 
-    const demData = await readDEM5Files(this.path.cacheDEM5, this.mapInfo);
+    await fetchAndWriteTiles(
+      `https://cyberjapandata.gsi.go.jp/xyz/experimental_fgd/18/`,
+      this.mapInfo.tile.list,
+      ".geojson",
+      this.path.cacheFGD,
+      {
+        parallelNumber: 5,
+        progress,
+      },
+    );
+
+    const demData = readDEM5Files(this.path.cacheDEM5, this.mapInfo);
 
     const { altiMap, waterMask } = plotDataToArray(
       demData,
@@ -584,6 +610,42 @@ export default class MapGenerator {
       path.join(dirPath, "info.json"),
       JSON.stringify({ min, zScale }, null, 2),
     );
+    return this;
+  }
+
+  outputBldgObj(): this {
+    const altiMap = this.maps.get("alti")!;
+    console.log("altimaplength", altiMap.length, altiMap[0].length);
+
+    const bldgOutlineData = readBldgData(this.path.cacheFGD, this.mapInfo)
+      .filter((a) => a.length > 2)
+      .map((a) =>
+        a.map((lal) => lalToJpr(lal, systemCodeToOrigin(this.systemCode))),
+      );
+
+    const shapes = bldgOutlineData.map((vecArr) => {
+      const { top, left } = this.mapInfo.mapAABB;
+      const poly = primitives.polygon({
+        points: vecArr.map(([y, x]) => [y - left, x - top]),
+      });
+      const indexArr = vecArr.map(([y, x]) => [
+        Math.round(left - y),
+        Math.round(top - x),
+      ]);
+      return transforms.translateZ(
+        Math.min(
+          ...indexArr.map(
+            ([y, x]) => altiMap.at(x)?.at(y) ?? Number.MAX_SAFE_INTEGER,
+          ),
+        ) - 5,
+        extrusions.extrudeLinear({ height: 10 }, poly),
+      );
+    });
+
+    const rawData = stlSerializer.serialize({ binary: false }, shapes);
+
+    fs.writeFileSync(path.join(this.path.outputDir, "bldg.stl"), rawData[0]);
+
     return this;
   }
 

@@ -15,20 +15,23 @@ import {
   Text,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import { ItemList } from "@/@type/ItemList";
 import { useRouter } from "next/navigation";
+import { Items } from "@/@type/ImportTypes";
 
-export default function Selector({ itemList }: { itemList: ItemList }) {
+export default function Selector({ items }: { items: Items }) {
   const router = useRouter();
   const onStart = () => {
     router.push("/map");
   };
 
   return (
-    <Box>
-      <Flex gap={6} wrap="wrap" margin={50}>
-        {itemList.map(({ name, point, description, image }) => (
-          <Card style={{ width: 300, height: 200 }}>
+    <Box padding={50}>
+      <Heading size="md" marginBottom={50} color="white">
+        持ち物選択画面
+      </Heading>
+      <Flex gap={6} wrap="wrap">
+        {items.map(({ name, point, description, image }) => (
+          <Card style={{ width: 400 }}>
             <CardHeader>
               <Checkbox>
                 <Heading size="md">{name}</Heading>
@@ -42,7 +45,7 @@ export default function Selector({ itemList }: { itemList: ItemList }) {
                   <Text>{description}</Text>
                 </Box>
                 <Image
-                  src={`/bringList/${image}`}
+                  src={`/items/${image}`}
                   alt={name}
                   width={150}
                   height={200}

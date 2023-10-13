@@ -1,0 +1,8 @@
+nextapp/Dockerfile.prod
+nextapp/Dockerfile.dev
+nextapp/.dockerignore
+nextapp/node_modules
+nextapp/npm-debug.log
+nextapp/README.md
+nextapp/.next
+nextapp/.idea

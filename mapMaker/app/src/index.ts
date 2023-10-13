@@ -4,10 +4,10 @@ import path from "path";
 import * as url from "url";
 import header from "./text/header.ts";
 import MapGenerator from "./GenerateMap/MapGenerator.ts";
-import map2D from "./GenerateMap/modeles/utils/map2D.ts";
+import map2D from "./GenerateMap/modules/utils/map2D.ts";
 import { NULL } from "./GenerateMap/constants.ts";
 import Progress from "./ui/progress.ts";
-import size2D from "./GenerateMap/modeles/utils/size2D.ts";
+import size2D from "./GenerateMap/modules/utils/size2D.ts";
 import description from "./text/description.ts";
 
 /**
@@ -35,7 +35,7 @@ function withProjectPath(str: string): string {
       outputDirPath: withProjectPath("/output"),
       cacheDirPath: withProjectPath("/cache"),
     },
-    process.env.USE_GPU ? process.env.USE_GPU === "true" : false,
+    process.env.USE_GPU !== undefined ? process.env.USE_GPU === "true" : true,
   );
 
   console.log(header);
@@ -58,7 +58,7 @@ function withProjectPath(str: string): string {
         inactive: "できてない...",
         initialValue: false,
       }))
-    ) { }
+    ) {}
   }
 
   console.log(`${chalk.green("o")}   処理開始`);
@@ -135,10 +135,12 @@ function withProjectPath(str: string): string {
     )
     .overlayMap("new", "alti", "depression", "water");
 
-  await mapGenerator.outputAllMaps();
+  // await mapGenerator.outputAllMaps();
 
   // output
   await mapGenerator.outputSlicedMaps("new", "sliced");
+
+  mapGenerator.outputBldgObj();
 
   outro("処理完了！ outputディレクトリを確認してください");
 })();

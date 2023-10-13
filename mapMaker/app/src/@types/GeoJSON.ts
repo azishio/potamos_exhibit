@@ -1,11 +1,7 @@
 import { type Vector2D } from "./Vector.ts";
 
-export interface ContourProperties {
-  alti: number;
-  class: "Bldl";
-}
 export interface BuildingOutlineProperties {
-  class: "Cntr";
+  class: "Bldl";
 }
 
 export interface AltiProperties {
@@ -14,7 +10,7 @@ export interface AltiProperties {
   alti: number;
 }
 
-export type Properties = ContourProperties | BuildingOutlineProperties;
+export type Properties = AltiProperties | BuildingOutlineProperties;
 
 export interface DEMData {
   coordinate: Vector2D;

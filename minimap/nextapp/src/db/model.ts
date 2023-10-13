@@ -18,6 +18,7 @@ export const Coordinate: Model<ICoordinate> =
 export interface IGameEvent {
   event: string;
   coordinate: { x: number; y: number; z: number };
+  createdAt: Date;
 }
 
 const gameEventSchema = new Schema<IGameEvent>(
@@ -28,6 +29,7 @@ const gameEventSchema = new Schema<IGameEvent>(
       y: { type: Number, required: true },
       z: { type: Number, required: true },
     },
+    createdAt: Date,
   },
   { toObject: { minimize: true }, timestamps: true },
 );
@@ -35,15 +37,23 @@ const gameEventSchema = new Schema<IGameEvent>(
 export const GameEvent: Model<IGameEvent> =
   models.GameEvent || model("GameEvent", gameEventSchema);
 
-export interface IGameInfo {
-  nickname: string;
+export interface IItems {
   items: string[];
 }
 
-const gameInfoSchema = new Schema<IGameInfo>({
-  nickname: { type: String, required: true },
+const itemsSchema = new Schema<IItems>({
   items: { type: [String], required: true },
 });
 
-export const GameInfo: Model<IGameInfo> =
-  models.GameInfo || model("GameInfo", gameInfoSchema);
+export const Items: Model<IItems> = models.Items || model("Items", itemsSchema);
+
+export interface INickname {
+  name: string;
+}
+
+const nicknameSchema = new Schema<INickname>({
+  name: { type: String, required: true },
+});
+
+export const Nickname: Model<INickname> =
+  models.Nickname || model("Nickname", nicknameSchema);

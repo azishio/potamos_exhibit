@@ -1,34 +1,19 @@
-"use client";
+import Content from "@/app/content";
+import { readStartPoint } from "@/data/readFiles";
+import { GameState, gameState } from "@/data/data";
+import { Vector2D } from "@/@type/Vector";
 
-import {
-  Button,
-  Card,
-  CardBody,
-  Center,
-  Heading,
-  Input,
-  VStack,
-} from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+export default async function InfoEntry() {
+  const initCoordinates = await readStartPoint();
+  const initCoordinate: Vector2D = initCoordinates[
+    Math.floor(Math.random() * initCoordinates.length)
+  ] as Vector2D;
 
-export default function InfoEntry() {
-  const router = useRouter();
-  const onStart = async () => {
-    router.push("/items");
-  };
+  gameState.state = new GameState(initCoordinate);
+
   return (
     <main>
-      <Center h="100vh">
-        <VStack>
-          <Card w="50vw">
-            <CardBody>
-              <Heading size="xs">ニックネーム</Heading>
-              <Input placeholder="ニックネーム" />
-            </CardBody>
-          </Card>
-          <Button onClick={onStart}>持ち物選択</Button>
-        </VStack>
-      </Center>
+      <Content />
     </main>
   );
 }

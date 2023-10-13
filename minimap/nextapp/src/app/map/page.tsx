@@ -1,33 +1,22 @@
-"use client";
-
-import { useState } from "react";
-import { LatLng } from "leaflet";
 import dynamic from "next/dynamic";
-import { readFile } from "fs/promises";
-import { ShelterList } from "@/@type/shelterList";
+import { readDangerZone, readShelter } from "@/data/readFiles";
+import { gameState } from "@/data/data";
 
 const MapComponent = dynamic(() => import("./Map"), { ssr: false });
 
 export default async function MapPage() {
-  const [position, setPosition] = useState(new LatLng(36.247555, 139.523918));
-
-  const shelters: ShelterList =
-    JSON.parse(await readFile("/data/shelter.json", "utf-8")) ?? [];
-
-  setInterval(async () => {
-    const data = await fetch("/last-location", {
-      method: "GET",
-    });
-    if (data.ok) {
-      const [long, lat]: [number, number] = await data.json();
-
-      setPosition(new LatLng(lat, long));
-    }
-  }, 1000);
+  console.log(await readDangerZone());
+  const dangerZone = (await readDangerZone()).sort((a, b) => b.time - a.time);
+  const shelters = await readShelter();
+  const [long, lat] = gameState.state.getLastCoordinate();
 
   return (
     <main>
-      <MapComponent position={position} shelters={shelters} />
+      <MapComponent
+        dangerZone={dangerZone}
+        shelters={shelters}
+        firstPosition={[lat, long]}
+      />
     </main>
   );
 }
