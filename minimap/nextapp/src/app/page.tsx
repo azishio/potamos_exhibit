@@ -9,7 +9,7 @@ export default async function InfoEntry() {
     Math.floor(Math.random() * initCoordinates.length)
   ] as Vector2D;
 
-  gameState.state = new GameState(initCoordinate);
+  gameState.content = new GameState(initCoordinate);
 
   return (
     <main>

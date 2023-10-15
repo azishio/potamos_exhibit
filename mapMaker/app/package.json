@@ -33,11 +33,11 @@
     "@jscad/stl-serializer": "^2.1.15",
     "@types/graceful-fs": "^4.1.7",
     "@types/node": "^20.5.9",
+    "@types/openjscad": "^0.0.33",
     "chalk": "^5.3.0",
     "cli-table3": "^0.6.3",
     "eastasianwidth": "^0.2.0",
     "fast-png": "^6.2.0",
-    "gpu.js": "^2.16.0",
     "graceful-fs": "^4.2.11",
     "ts-node": "^10.9.1"
   },

@@ -31,7 +31,7 @@ export default function readBldgData(
   dirPath: string,
   mapInfo: MapInfo,
 ): Vector2D[][] {
-  const useFileNameList = mapInfo.tile.list.map(
+  const useFileNameList = mapInfo.tileList18.map(
     ([x, y]) => `${x}_${y}.geojson`,
   );
   const fileList = new Set(fs.readdirSync(dirPath));

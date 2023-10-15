@@ -112,31 +112,29 @@ export default function getMapInfo(
   })();
 
   /* 正方形の頂点を含むタイルの座標 */
-  const needTilesAABB: Rect = (() => {
-    const [left, top] = lalToTileCoord(mapLalPadding.lt);
-    const [right, bottom] = lalToTileCoord(mapLalPadding.rb);
+  const needTilesAABB = (zoomLv: number) => {
+    const [left, top] = lalToTileCoord(mapLalPadding.lt, zoomLv);
+    const [right, bottom] = lalToTileCoord(mapLalPadding.rb, zoomLv);
 
     return { left, top, right, bottom };
-  })();
+  };
 
-  const tileList = (() => {
-    const { left, top, right, bottom } = needTilesAABB;
+  const tileList = (zoomLv: number): Vector2D[] => {
+    const { left, top, right, bottom } = needTilesAABB(zoomLv);
 
     const tiles: Vector2D[] = [];
     for (let x = left; x <= right; x++)
       for (let y = top; y <= bottom; y++) tiles.push([x, y]);
 
     return tiles;
-  })();
+  };
 
   return {
     pointsAABB: pointsAABB.rect,
     mapAABB,
     paddingAABB: mapPadding.rect,
-    tile: {
-      rect: needTilesAABB,
-      list: tileList,
-      nums: tileNums,
-    },
+    tileList18: tileList(18),
+    tileList16: tileList(16),
+    imageNum: tileNums,
   };
 }

@@ -17,3 +17,19 @@ export interface DEMData {
   alti: number;
   isWater: boolean;
 }
+
+export interface RdclProperties {
+  class: "RdCL";
+  rnkWidth:
+    | "3m未満"
+    | "3m-5.5m未満"
+    | "5.5m-13m未満"
+    | "13m-19.5m未満"
+    | "19.5m以上";
+}
+
+export interface RdclData {
+  coordinates: Vector2D[];
+  coordinates: Vector2D;
+  width: number;
+}

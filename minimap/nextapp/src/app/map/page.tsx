@@ -5,15 +5,17 @@ import { gameState } from "@/data/data";
 const MapComponent = dynamic(() => import("./Map"), { ssr: false });
 
 export default async function MapPage() {
-  console.log(await readDangerZone());
   const dangerZone = (await readDangerZone()).sort((a, b) => b.time - a.time);
   const shelters = await readShelter();
-  const [long, lat] = gameState.state.getLastCoordinate();
+  const [long, lat] = gameState.content.getLastCoordinate();
+
+  gameState.content.setStartTime();
 
   return (
     <main>
       <MapComponent
-        dangerZone={dangerZone}
+        startTime={gameState.content.startTime}
+        dangerZones={dangerZone}
         shelters={shelters}
         firstPosition={[lat, long]}
       />

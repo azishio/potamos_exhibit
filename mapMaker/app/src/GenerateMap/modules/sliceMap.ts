@@ -26,7 +26,7 @@ export default function sliceMap(
   sourceMap: number[][],
   mapInfo: MapInfo,
 ): SlicedMap[] {
-  const { nums } = mapInfo.tile;
+  const nums = mapInfo.imageNum;
 
   const size = [8001, 4001, 2001, 1001] as const;
   // 切り出す8001/4001/2001/1001サイズのタイルの左上の座標一覧

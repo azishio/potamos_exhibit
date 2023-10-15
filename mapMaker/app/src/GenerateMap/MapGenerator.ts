@@ -1,12 +1,9 @@
 import path from "path";
 import fs from "fs";
 import fsp from "fs/promises";
-import primitives from "@jscad/modeling/src/primitives";
-import transforms from "@jscad/modeling/src/operations/transforms";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
+// @ts-expect-error 型定義ファイルがない
 import stlSerializer from "@jscad/stl-serializer";
-import extrusions from "@jscad/modeling/src/operations/extrusions";
+import jscad from "@jscad/modeling";
 import getMapInfo from "./modules/getMapInfo.ts";
 import plotDataToArray from "./modules/plotDataToArray.ts";
 import fetchAndWriteTiles from "./io/fetchAndWriteTiles.ts";
@@ -39,18 +36,11 @@ import size2D from "./modules/utils/size2D.ts";
 import type Progress from "../ui/progress.ts";
 import { type SystemCode, type Vector2D } from "../@types/Vector.ts";
 import { type MapInfo } from "../@types/Map.ts";
-import makeDepressionGPU from "./modules/interpolation/makeDepressionGPU.ts";
-import {
-  bilinearMissingInterpolationGPU,
-  bilinearUpSamplingGPU,
-} from "./modules/interpolation/bilinearGPU.ts";
-import {
-  bicubicMissingInterpolationGPU,
-  bicubicUpSamplingGPU,
-} from "./modules/interpolation/bicubicGPU.ts";
 import readBldgData from "./io/readBldgData.ts";
 import lalToJpr from "./modules/coordinateTransformation/lalToJpr.ts";
 import systemCodeToOrigin from "./modules/utils/systemCodeToOrigin.ts";
+
+const { extrusions, primitives, transforms } = jscad;
 
 export interface CallbackArg {
   maps: Map<string, number[][]>;
@@ -66,11 +56,9 @@ export default class MapGenerator {
     pointsAABB: { right: 0, left: 0, top: 0, bottom: 0 },
     mapAABB: { right: 0, left: 0, top: 0, bottom: 0 },
     paddingAABB: { right: 0, left: 0, top: 0, bottom: 0 },
-    tile: {
-      rect: { right: 0, left: 0, top: 0, bottom: 0 },
-      list: [],
-      nums: [0, 0, 0, 0],
-    },
+    tileList18: [],
+    tileList16: [],
+    imageNum: [0, 0, 0, 0],
   };
 
   private readonly maps = new Map<string, number[][]>();
@@ -79,26 +67,21 @@ export default class MapGenerator {
 
   private readonly path;
 
-  private readonly useGPU;
-
-  constructor(
-    {
-      inputDirPath,
-      outputDirPath,
-      cacheDirPath,
-    }: {
-      inputDirPath: string;
-      outputDirPath: string;
-      cacheDirPath: string;
-    },
-    useGPU: boolean,
-  ) {
-    this.useGPU = useGPU;
+  constructor({
+    inputDirPath,
+    outputDirPath,
+    cacheDirPath,
+  }: {
+    inputDirPath: string;
+    outputDirPath: string;
+    cacheDirPath: string;
+  }) {
     this.path = {
       inputDir: inputDirPath,
       outputDir: outputDirPath,
       cacheDEM5: path.join(cacheDirPath, "dem5"),
       cacheFGD: path.join(cacheDirPath, "fgd"),
+      cacheRDCL: path.join(cacheDirPath, "ldcl"),
     };
 
     Object.values(this.path).forEach((dirPath) => {
@@ -122,7 +105,7 @@ export default class MapGenerator {
   async setPoints(
     points: Vector2D[],
     systemCode: SystemCode,
-    progress?: Progress,
+    progress?: { dem5: Progress; rdcl: Progress; fgd: Progress },
   ): Promise<this> {
     if (this.flag.dataImported)
       throw Error("すでにデータはインポートされています");
@@ -131,30 +114,36 @@ export default class MapGenerator {
     this.mapInfo = getMapInfo(points, systemCode);
     this.systemCode = systemCode;
 
-    fs.writeFileSync(
-      path.join(this.path.outputDir, "mapInfo.json"),
-      JSON.stringify(this.mapInfo, null, 2),
-    );
-
     await fetchAndWriteTiles(
       `https://cyberjapandata.gsi.go.jp/xyz/experimental_dem5a/18/`,
-      this.mapInfo.tile.list,
+      this.mapInfo.tileList18,
       ".geojson",
       this.path.cacheDEM5,
       {
         parallelNumber: 5,
-        progress,
+        progress: progress?.dem5,
       },
     );
 
     await fetchAndWriteTiles(
       `https://cyberjapandata.gsi.go.jp/xyz/experimental_fgd/18/`,
-      this.mapInfo.tile.list,
+      this.mapInfo.tileList18,
       ".geojson",
       this.path.cacheFGD,
       {
         parallelNumber: 5,
-        progress,
+        progress: progress?.fgd,
+      },
+    );
+
+    await fetchAndWriteTiles(
+      `https://cyberjapandata.gsi.go.jp/xyz/experimental_rdcl/16/`,
+      this.mapInfo.tileList16,
+      ".geojson",
+      this.path.cacheRDCL,
+      {
+        parallelNumber: 5,
+        progress: progress?.rdcl,
       },
     );
 
@@ -173,7 +162,11 @@ export default class MapGenerator {
     return this;
   }
 
-  async setPointsByFile(progress?: Progress): Promise<this> {
+  async setPointsByFile(progress?: {
+    dem5: Progress;
+    rdcl: Progress;
+    fgd: Progress;
+  }): Promise<this> {
     const { coordinates, systemCode } = await readPointsFile(
       path.join(this.path.inputDir, "points.json"),
     );
@@ -236,25 +229,16 @@ export default class MapGenerator {
             );
 
           if (algorithm === "bicubic")
-            return this.useGPU
-              ? bicubicMissingInterpolationGPU(
-                  v,
-                  param.a,
-                  param.overshootSuppression,
-                  NULL,
-                )
-              : bicubicMissingInterpolation(
-                  v,
-                  param.a,
-                  param.overshootSuppression,
-                  NULL,
-                  progress,
-                );
+            return bicubicMissingInterpolation(
+              v,
+              param.a,
+              param.overshootSuppression,
+              NULL,
+              progress,
+            );
 
           if (algorithm === "bilinear")
-            return this.useGPU
-              ? bilinearMissingInterpolationGPU(v)
-              : bilinearMissingInterpolation(v, NULL, progress);
+            return bilinearMissingInterpolation(v, NULL, progress);
 
           return v;
         })(map),
@@ -294,25 +278,16 @@ export default class MapGenerator {
               );
 
             if (algorithm === "bicubic")
-              return this.useGPU
-                ? bicubicMissingInterpolationGPU(
-                    v,
-                    param.a,
-                    param.overshootSuppression,
-                    NULL,
-                  )
-                : bicubicMissingInterpolation(
-                    v,
-                    param.a,
-                    param.overshootSuppression,
-                    NULL,
-                    progress,
-                  );
+              return bicubicMissingInterpolation(
+                v,
+                param.a,
+                param.overshootSuppression,
+                NULL,
+                progress,
+              );
 
             if (algorithm === "bilinear")
-              return this.useGPU
-                ? bilinearMissingInterpolationGPU(v)
-                : bilinearMissingInterpolation(v, NULL, progress);
+              return bilinearMissingInterpolation(v, NULL, progress);
 
             return v;
           })(boolTo01(mask)),
@@ -347,14 +322,20 @@ export default class MapGenerator {
     if (!MapGenerator.isValidMask(mask) || !MapGenerator.isValidMap(map))
       return this;
 
-    this.maps.set(
-      name,
-      this.useGPU
-        ? makeDepressionGPU(map, mask, offset, factor)
-        : makeDepression(map, mask, offset, factor, progress),
-    );
+    this.maps.set(name, makeDepression(map, mask, offset, factor, progress));
 
     return this;
+  }
+
+  outputInfo() {
+    fs.writeFileSync(
+      path.join(this.path.outputDir, "boundary.json"),
+      JSON.stringify(this.mapInfo.paddingAABB, null, 2),
+    );
+    fs.writeFileSync(
+      path.join(this.path.outputDir, "lal0.json"),
+      JSON.stringify(systemCodeToOrigin(this.systemCode), null, 2),
+    );
   }
 
   overlayMap(
@@ -437,25 +418,16 @@ export default class MapGenerator {
                 );
 
               if (algorithm === "bicubic")
-                return this.useGPU
-                  ? bicubicUpSamplingGPU(
-                      scale,
-                      v,
-                      mapsParam.a,
-                      mapsParam.overshootSuppression,
-                    )
-                  : bicubicUpSampling(
-                      scale,
-                      v,
-                      mapsParam.a,
-                      mapsParam.overshootSuppression,
-                      progressFn,
-                    );
+                return bicubicUpSampling(
+                  scale,
+                  v,
+                  mapsParam.a,
+                  mapsParam.overshootSuppression,
+                  progressFn,
+                );
 
               if (algorithm === "bilinear")
-                return this.useGPU
-                  ? bilinearUpSamplingGPU(scale, v)
-                  : bilinearUpSampling(scale, v, progressFn);
+                return bilinearUpSampling(scale, v, progressFn);
 
               return v;
             })(this.maps.get(key)!),
@@ -483,26 +455,17 @@ export default class MapGenerator {
                 );
 
               if (algorithm === "bicubic") {
-                return this.useGPU
-                  ? bicubicUpSamplingGPU(
-                      scale,
-                      v,
-                      maskParam.a,
-                      maskParam.overshootSuppression,
-                    )
-                  : bicubicUpSampling(
-                      scale,
-                      v,
-                      maskParam.a,
-                      maskParam.overshootSuppression,
-                      progressFn,
-                    );
+                return bicubicUpSampling(
+                  scale,
+                  v,
+                  maskParam.a,
+                  maskParam.overshootSuppression,
+                  progressFn,
+                );
               }
 
               if (algorithm === "bilinear")
-                return this.useGPU
-                  ? bilinearUpSamplingGPU(scale, v)
-                  : bilinearUpSampling(scale, v, progressFn);
+                return bilinearUpSampling(scale, v, progressFn);
 
               return v;
             })(boolTo01(this.masks.get(key)!)),
@@ -615,7 +578,6 @@ export default class MapGenerator {
 
   outputBldgObj(): this {
     const altiMap = this.maps.get("alti")!;
-    console.log("altimaplength", altiMap.length, altiMap[0].length);
 
     const bldgOutlineData = readBldgData(this.path.cacheFGD, this.mapInfo)
       .filter((a) => a.length > 2)
@@ -649,6 +611,34 @@ export default class MapGenerator {
     return this;
   }
 
+  /*
+  outputRoadObj(): this {
+    const rdlcData = readRdclFiles(this.path.cacheFGD, this.mapInfo).map(
+      ({ coordinates, width }) => ({
+        width,
+        coordinates: coordinates.map((lal) =>
+          lalToJpr(lal, systemCodeToOrigin(this.systemCode)),
+        ),
+      }),
+    );
+
+    const shapes = rdlcData.map(({ width, coordinates }) => {
+      const { top, left } = this.mapInfo.paddingAABB;
+      return new Path2D(
+        coordinates.map(([y, x]) => [y - left, x - top]) as unknown as number[],
+        false,
+      ).rectangularExtrude(width, 1, 8);
+    });
+
+    const rawData = stlSerializer.serialize({ binary: false }, shapes);
+
+    fs.writeFileSync(path.join(this.path.outputDir, "rode.stl"), rawData[0]);
+
+    return this;
+  }
+
+
+   */
   // 状態の整合性チェック
   private checkValidation(): void {
     if (!this.flag.dataImported)

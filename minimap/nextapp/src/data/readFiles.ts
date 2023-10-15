@@ -62,9 +62,9 @@ export const readStartPoint = async (): Promise<StartPoints> => {
 
 export const readBoundary = async (): Promise<Boundary> => {
   const path = join(dataDirPath, "boundary.json");
-  const result = await readFile(path, boundarySchema);
+  const result = await readFile<Boundary>(path, boundarySchema);
   if (result === undefined) throw new Error("boundary.jsonの形式が不正");
-  return result;
+  return result as Boundary;
 };
 
 export const readItems = async (): Promise<Items> => {

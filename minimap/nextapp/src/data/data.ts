@@ -6,21 +6,24 @@ export class GameState {
 
   items: string[] = [];
 
+  state: "playing" | "dead" | "goal" = "playing";
+
+  startTime: number = 0;
+
+  itemPoint: number = 0;
+
   private coordinate: Vector2D[];
-
-  private dead = false;
-
-  private startTime: number;
-
-  private continue = true;
 
   constructor(startPoint: Vector2D) {
     this.coordinate = [startPoint];
-    this.startTime = new Date().getTime();
   }
 
   getLastCoordinate() {
     return this.coordinate.at(-1)!;
+  }
+
+  setStartTime() {
+    this.startTime = new Date().getTime();
   }
 
   setCoordinate(coordinate: Vector2D) {
@@ -29,8 +32,8 @@ export class GameState {
 }
 
 const startPoints = (await readStartPoint()) as Vector2D[];
-export const gameState: { state: GameState } = {
-  state: new GameState(
+export const gameState: { content: GameState } = {
+  content: new GameState(
     startPoints[Math.floor(Math.random() * startPoints.length)],
   ),
 };

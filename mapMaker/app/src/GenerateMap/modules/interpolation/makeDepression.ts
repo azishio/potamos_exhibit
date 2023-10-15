@@ -128,6 +128,5 @@ export default function makeDepression(
 
   progress?.clear();
 
-  console.log(result.length, result[0].length);
   return result;
 }

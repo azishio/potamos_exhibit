@@ -29,14 +29,11 @@ function withProjectPath(str: string): string {
 
 (async (): Promise<void> => {
   // 初期化
-  const mapGenerator = new MapGenerator(
-    {
-      inputDirPath: withProjectPath("/input"),
-      outputDirPath: withProjectPath("/output"),
-      cacheDirPath: withProjectPath("/cache"),
-    },
-    process.env.USE_GPU !== undefined ? process.env.USE_GPU === "true" : true,
-  );
+  const mapGenerator = new MapGenerator({
+    inputDirPath: withProjectPath("/input"),
+    outputDirPath: withProjectPath("/output"),
+    cacheDirPath: withProjectPath("/cache"),
+  });
 
   console.log(header);
 
@@ -80,8 +77,14 @@ function withProjectPath(str: string): string {
   const makeDepressionProgress = new Progress("tile", "makeDepression");
 
   // データフェッチ
-  const fetchProgress = new Progress("tile", "demTileFetch");
-  await mapGenerator.setPointsByFile(fetchProgress);
+  const demFetchProgress = new Progress("tile", "demTileFetch");
+  const fgdFetchProgress = new Progress("tile", "fgdTileFetch");
+  const rdclFetchProgress = new Progress("tile", "rdclTileFetch");
+  await mapGenerator.setPointsByFile({
+    dem5: demFetchProgress,
+    fgd: fgdFetchProgress,
+    rdcl: rdclFetchProgress,
+  });
 
   // 計算
   mapGenerator
@@ -103,7 +106,21 @@ function withProjectPath(str: string): string {
         }),
       );
       generateWaterMaskProgress.clear();
-    })
+    });
+
+  mapGenerator.upSampling(
+    5,
+    { algorithm: "bicubic", a: -0.5, overshootSuppression: 3 },
+    {
+      algorithm: "bilinear",
+      threshold: 0.6,
+    },
+    {
+      maps: [{ key: "alti", progress: altiMapUpSamplingProgress }],
+      masks: [{ key: "water", progress: waterMaskUpSamplingProgress }],
+    },
+  );
+  mapGenerator
     .maskMissingInterpolation(
       ["water"],
       0.9,
@@ -112,18 +129,6 @@ function withProjectPath(str: string): string {
       },
       ["water"],
       waterMaskMissingInterpolationProgress,
-    )
-    .upSampling(
-      5,
-      { algorithm: "bicubic", a: -0.5, overshootSuppression: 3 },
-      {
-        algorithm: "bilinear",
-        threshold: 0.6,
-      },
-      {
-        maps: [{ key: "alti", progress: altiMapUpSamplingProgress }],
-        masks: [{ key: "water", progress: waterMaskUpSamplingProgress }],
-      },
     )
     .makeDepression(
       "depression",
@@ -135,12 +140,13 @@ function withProjectPath(str: string): string {
     )
     .overlayMap("new", "alti", "depression", "water");
 
-  // await mapGenerator.outputAllMaps();
+  await mapGenerator.outputAllMaps();
 
   // output
   await mapGenerator.outputSlicedMaps("new", "sliced");
-
+  mapGenerator.outputInfo();
   mapGenerator.outputBldgObj();
+  // mapGenerator.outputRoadObj();
 
   outro("処理完了！ outputディレクトリを確認してください");
 })();

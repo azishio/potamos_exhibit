@@ -3,27 +3,31 @@
 import { MapContainer, Marker, Polygon, Popup, TileLayer } from "react-leaflet";
 import { icon, LatLng } from "leaflet";
 import { DangerZones, Shelters } from "@/@type/ImportTypes";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Vector2D } from "@/@type/Vector";
+import { useRouter } from "next/navigation";
 
 export default function Map({
-  dangerZone,
+  dangerZones,
   shelters,
   firstPosition,
+  startTime,
 }: {
-  dangerZone: DangerZones;
+  dangerZones: DangerZones;
   shelters: Shelters;
   firstPosition: Vector2D;
+  startTime: number;
 }) {
-  const startTime = useRef(new Date().getTime());
+  const router = useRouter();
+
   const [position, setPosition] = useState<Vector2D>(firstPosition);
-  const [currentDangerZone, setCurrentDangerZone] = useState<Vector2D[][]>([]);
+  const [currentDangerZone, setCurrentDangerZone] = useState<Vector2D[][][]>(
+    [],
+  );
   const [preDangerZone, setPreDangerZone] = useState<Vector2D[][]>([]);
   const [showPreDangerZone, setShowPreDangerZone] = useState(true);
 
   const fetchPosition = async () => {
-    console.log(position);
-
     const [long, lat] = (await (
       await fetch("/last-location", { method: "GET" })
     ).json()) as Vector2D;
@@ -31,15 +35,21 @@ export default function Map({
     setPosition([lat, long]);
     setShowPreDangerZone((pre) => !pre);
 
-    const elapsedTime = new Date().getTime() - startTime.current;
+    const elapsedTime = new Date().getTime() - startTime;
 
-    const currentDZ = dangerZone.find(({ time }) => time < elapsedTime);
-    const preDZ = dangerZone.find(({ time }) => time < elapsedTime + 5000);
+    const currentDZ = dangerZones
+      .filter(({ time }) => time * 1000 < elapsedTime)
+      .map((v) => v.areas);
+    const preDZ = dangerZones.find(
+      ({ time }) =>
+        time * 1000 < elapsedTime + 5000 && time * 1000 - elapsedTime > 0,
+    )?.areas;
 
-    setCurrentDangerZone((currentDZ?.areas as Vector2D[][]) ?? []);
-    setPreDangerZone(
-      (currentDZ === preDZ ? [] : (preDZ?.areas as Vector2D[][])) ?? [],
-    );
+    setCurrentDangerZone((currentDZ as Vector2D[][][]) ?? []);
+    setPreDangerZone((preDZ ?? []) as Vector2D[][]);
+
+    const state = await (await fetch("/state", { method: "GET" })).json();
+    if (state.state !== "playing") router.push("/result");
   };
 
   useEffect(() => {
@@ -74,9 +84,19 @@ export default function Map({
           <Popup>{name}</Popup>
         </Marker>
       ))}
-      <Polygon pathOptions={{ color: "blue" }} positions={currentDangerZone} />
       <Polygon
-        pathOptions={{ color: "blue", opacity: showPreDangerZone ? 100 : 0 }}
+        pathOptions={{
+          color: "blue",
+          opacity: 0,
+        }}
+        positions={currentDangerZone}
+      />
+      <Polygon
+        pathOptions={{
+          color: "blue",
+          opacity: 0,
+          fillOpacity: showPreDangerZone ? 0.2 : 0,
+        }}
         positions={preDangerZone}
       />
     </MapContainer>
